@@ -25,10 +25,20 @@ mongoose.connect(mongoURI, {
 const studentSchema = new mongoose.Schema({
   name: String,
   points: Number,
+  grade: Number,  // Keep for backwards compatibility
   createdAt: { type: Date, default: Date.now }
 });
 
 const Student = mongoose.model('Student', studentSchema);
+
+// Middleware to normalize grade/points
+const normalizeGradePoints = (doc) => {
+  if (doc && doc.toObject) doc = doc.toObject();
+  if (doc && !doc.points && doc.grade !== undefined) {
+    doc.points = doc.grade;
+  }
+  return doc;
+};
 
 // Routes
 
@@ -36,8 +46,10 @@ const Student = mongoose.model('Student', studentSchema);
 app.get('/api/students', async (req, res) => {
   try {
     const students = await Student.find().sort({ createdAt: -1 });
-    res.json(students);
+    const normalized = students.map(normalizeGradePoints);
+    res.json(normalized);
   } catch (error) {
+    console.error('Error fetching students:', error);
     res.status(500).json({ error: error.message });
   }
 });
@@ -53,7 +65,7 @@ app.post('/api/students', async (req, res) => {
 
     const student = new Student({ name, points });
     await student.save();
-    res.json(student);
+    res.json(normalizeGradePoints(student));
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
@@ -68,7 +80,7 @@ app.put('/api/students/:id', async (req, res) => {
       { points },
       { new: true }
     );
-    res.json(student);
+    res.json(normalizeGradePoints(student));
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
@@ -87,4 +99,5 @@ app.delete('/api/students/:id', async (req, res) => {
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
+  console.log(`Listening on http://localhost:${PORT}`);
 });
