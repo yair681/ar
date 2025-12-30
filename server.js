@@ -24,7 +24,7 @@ mongoose.connect(mongoURI, {
 // Schemas
 const studentSchema = new mongoose.Schema({
   name: String,
-  grade: Number,
+  points: Number,
   createdAt: { type: Date, default: Date.now }
 });
 
@@ -32,7 +32,7 @@ const Student = mongoose.model('Student', studentSchema);
 
 // Routes
 
-// Get all students
+// Get all students with their points
 app.get('/api/students', async (req, res) => {
   try {
     const students = await Student.find().sort({ createdAt: -1 });
@@ -42,16 +42,16 @@ app.get('/api/students', async (req, res) => {
   }
 });
 
-// Add student
+// Add student with points
 app.post('/api/students', async (req, res) => {
   try {
-    const { name, grade } = req.body;
+    const { name, points } = req.body;
     
-    if (!name || grade === undefined) {
-      return res.status(400).json({ error: 'Name and grade are required' });
+    if (!name || points === undefined) {
+      return res.status(400).json({ error: 'Name and points are required' });
     }
 
-    const student = new Student({ name, grade });
+    const student = new Student({ name, points });
     await student.save();
     res.json(student);
   } catch (error) {
@@ -59,13 +59,13 @@ app.post('/api/students', async (req, res) => {
   }
 });
 
-// Update student grade
+// Update student points
 app.put('/api/students/:id', async (req, res) => {
   try {
-    const { grade } = req.body;
+    const { points } = req.body;
     const student = await Student.findByIdAndUpdate(
       req.params.id,
-      { grade },
+      { points },
       { new: true }
     );
     res.json(student);
