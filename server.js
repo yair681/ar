@@ -33,11 +33,17 @@ const Student = mongoose.model('Student', studentSchema);
 
 // Middleware to normalize grade/points
 const normalizeGradePoints = (doc) => {
-  if (doc && doc.toObject) doc = doc.toObject();
-  if (doc && !doc.points && doc.grade !== undefined) {
-    doc.points = doc.grade;
+  try {
+    if (!doc) return {};
+    if (doc.toObject) doc = doc.toObject();
+    if (!doc.points && doc.grade !== undefined) {
+      doc.points = doc.grade;
+    }
+    return doc;
+  } catch (e) {
+    console.error('Error normalizing:', e);
+    return doc;
   }
-  return doc;
 };
 
 // Routes
@@ -46,11 +52,14 @@ const normalizeGradePoints = (doc) => {
 app.get('/api/students', async (req, res) => {
   try {
     const students = await Student.find().sort({ createdAt: -1 });
+    if (!students || !Array.isArray(students)) {
+      return res.json([]);
+    }
     const normalized = students.map(normalizeGradePoints);
     res.json(normalized);
   } catch (error) {
     console.error('Error fetching students:', error);
-    res.status(500).json({ error: error.message });
+    res.json([]);
   }
 });
 
