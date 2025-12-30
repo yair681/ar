@@ -1,0 +1,395 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>מערכת ניהול ציונים</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+            direction: rtl;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+            padding: 30px;
+        }
+
+        h1 {
+            color: #333;
+            margin-bottom: 30px;
+            text-align: center;
+            font-size: 2.5em;
+        }
+
+        .form-section {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 30px;
+        }
+
+        .form-group {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+            flex-wrap: wrap;
+        }
+
+        label {
+            font-weight: 600;
+            color: #555;
+            margin-bottom: 5px;
+            display: block;
+            width: 100%;
+        }
+
+        input {
+            padding: 10px 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 5px;
+            font-size: 1em;
+            flex: 1;
+            min-width: 150px;
+            transition: border-color 0.3s;
+        }
+
+        input:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 5px rgba(102, 126, 234, 0.3);
+        }
+
+        .button-group {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+        }
+
+        button {
+            padding: 12px 30px;
+            border: none;
+            border-radius: 5px;
+            font-size: 1em;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+
+        .btn-add {
+            background: #667eea;
+            color: white;
+            flex: 1;
+            min-width: 200px;
+        }
+
+        .btn-add:hover {
+            background: #5568d3;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .students-section {
+            margin-top: 30px;
+        }
+
+        .students-section h2 {
+            color: #333;
+            margin-bottom: 20px;
+            font-size: 1.8em;
+            border-bottom: 3px solid #667eea;
+            padding-bottom: 10px;
+        }
+
+        .student-item {
+            background: white;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: all 0.3s;
+        }
+
+        .student-item:hover {
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+            border-color: #667eea;
+        }
+
+        .student-info {
+            flex: 1;
+        }
+
+        .student-name {
+            font-size: 1.3em;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 8px;
+        }
+
+        .student-grade-display {
+            font-size: 1.1em;
+            color: #667eea;
+            font-weight: 600;
+        }
+
+        .student-actions {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .grade-input-small {
+            width: 80px;
+            padding: 8px;
+            border: 2px solid #e0e0e0;
+            border-radius: 5px;
+            font-size: 0.95em;
+        }
+
+        .btn-update {
+            background: #28a745;
+            color: white;
+            padding: 8px 15px;
+            border-radius: 5px;
+            border: none;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+
+        .btn-update:hover {
+            background: #218838;
+            transform: translateY(-2px);
+        }
+
+        .btn-delete {
+            background: #dc3545;
+            color: white;
+            padding: 8px 15px;
+            border-radius: 5px;
+            border: none;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+
+        .btn-delete:hover {
+            background: #c82333;
+            transform: translateY(-2px);
+        }
+
+        .empty-message {
+            text-align: center;
+            color: #999;
+            padding: 40px 20px;
+            font-size: 1.1em;
+        }
+
+        .grade-badge {
+            background: #667eea;
+            color: white;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 0.95em;
+            min-width: 60px;
+            text-align: center;
+        }
+
+        @media (max-width: 600px) {
+            .container {
+                padding: 20px;
+            }
+
+            h1 {
+                font-size: 1.8em;
+            }
+
+            .form-group {
+                flex-direction: column;
+            }
+
+            .student-item {
+                flex-direction: column;
+                gap: 15px;
+                align-items: flex-start;
+            }
+
+            .student-actions {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>📊 מערכת ניהול ציונים</h1>
+        
+        <div class="form-section">
+            <div class="form-group">
+                <label for="studentName">שם התלמיד:</label>
+                <input type="text" id="studentName" placeholder="הכנס שם תלמיד...">
+            </div>
+            
+            <div class="form-group">
+                <label for="studentGrade">ציון:</label>
+                <input type="number" id="studentGrade" placeholder="הכנס ציון (0-100)" min="0" max="100">
+            </div>
+            
+            <div class="button-group">
+                <button class="btn-add" onclick="addStudent()">➕ הוסף תלמיד</button>
+            </div>
+        </div>
+
+        <div class="students-section">
+            <h2>📝 רשימת התלמידים</h2>
+            <div id="studentsList"></div>
+        </div>
+    </div>
+
+    <script>
+        const API_URL = '/api/students';
+
+        // Load students on page load
+        document.addEventListener('DOMContentLoaded', loadStudents);
+
+        // Allow Enter key to submit
+        document.getElementById('studentGrade').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') addStudent();
+        });
+
+        document.getElementById('studentName').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') addStudent();
+        });
+
+        async function loadStudents() {
+            try {
+                const response = await fetch(API_URL);
+                const students = await response.json();
+                displayStudents(students);
+            } catch (error) {
+                console.error('Error loading students:', error);
+            }
+        }
+
+        function displayStudents(students) {
+            const studentsList = document.getElementById('studentsList');
+            
+            if (students.length === 0) {
+                studentsList.innerHTML = '<div class="empty-message">אין תלמידים בעדכון. הוסף תלמיד חדש! 📚</div>';
+                return;
+            }
+
+            studentsList.innerHTML = students.map(student => `
+                <div class="student-item">
+                    <div class="student-info">
+                        <div class="student-name">${student.name}</div>
+                        <div class="student-grade-display">ציון נוכחי: <span class="grade-badge">${student.grade}</span></div>
+                    </div>
+                    <div class="student-actions">
+                        <input type="number" class="grade-input-small" id="grade-${student._id}" value="${student.grade}" min="0" max="100">
+                        <button class="btn-update" onclick="updateGrade('${student._id}')">עדכן</button>
+                        <button class="btn-delete" onclick="deleteStudent('${student._id}')">מחק</button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        async function addStudent() {
+            const name = document.getElementById('studentName').value.trim();
+            const grade = document.getElementById('studentGrade').value;
+
+            if (!name) {
+                alert('אנא הכנס שם תלמיד');
+                return;
+            }
+
+            if (grade === '' || grade < 0 || grade > 100) {
+                alert('אנא הכנס ציון תקין (0-100)');
+                return;
+            }
+
+            try {
+                const response = await fetch(API_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ name, grade: parseInt(grade) })
+                });
+
+                if (response.ok) {
+                    document.getElementById('studentName').value = '';
+                    document.getElementById('studentGrade').value = '';
+                    loadStudents();
+                } else {
+                    alert('שגיאה בהוספת התלמיד');
+                }
+            } catch (error) {
+                console.error('Error adding student:', error);
+                alert('שגיאה בהוספת התלמיד');
+            }
+        }
+
+        async function updateGrade(studentId) {
+            const newGrade = document.getElementById(`grade-${studentId}`).value;
+
+            if (newGrade === '' || newGrade < 0 || newGrade > 100) {
+                alert('אנא הכנס ציון תקין (0-100)');
+                return;
+            }
+
+            try {
+                const response = await fetch(`${API_URL}/${studentId}`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ grade: parseInt(newGrade) })
+                });
+
+                if (response.ok) {
+                    loadStudents();
+                } else {
+                    alert('שגיאה בעדכון הציון');
+                }
+            } catch (error) {
+                console.error('Error updating grade:', error);
+                alert('שגיאה בעדכון הציון');
+            }
+        }
+
+        async function deleteStudent(studentId) {
+            if (!confirm('האם אתה בטוח שברצונך למחוק תלמיד זה?')) {
+                return;
+            }
+
+            try {
+                const response = await fetch(`${API_URL}/${studentId}`, {
+                    method: 'DELETE'
+                });
+
+                if (response.ok) {
+                    loadStudents();
+                } else {
+                    alert('שגיאה במחיקת התלמיד');
+                }
+            } catch (error) {
+                console.error('Error deleting student:', error);
+                alert('שגיאה במחיקת התלמיד');
+            }
+        }
+    </script>
+</body>
+</html>
